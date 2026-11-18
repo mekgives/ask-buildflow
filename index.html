@@ -134,12 +134,12 @@
   <section class="done" id="done" hidden>
     <div class="big"><svg width="42" height="42" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 22l8 8 16-17"/></svg></div>
     <h1>Got it</h1>
-    <p class="hi" id="doneMsg">Michael has your request and will be in touch.</p>
+    <p class="hi" id="doneMsg">BuildFlowAI is on it.</p>
     <button class="ghost" id="again" type="button">Send another</button>
   </section>
 
   <section class="nolink" id="nolink" hidden>
-    <p>This page needs your personal link.<br>Ask Michael to send it to you.</p>
+    <p>This page needs your personal BuildFlowAI link.<br>Please use the link you were sent.</p>
   </section>
 
   <footer><img src="icons/logo.png" alt="BuildFlowAI"></footer>
@@ -148,7 +148,7 @@
 <script>
 // Home-screen apps can hold an old copy of this page. If a newer one is online, reload once.
 (function () {
-  var V = 'v2026-11-18e';
+  var V = 'v2026-11-18f';
   try {
     fetch(location.pathname + '?nocache=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
       var m = t.match(/var V = '([^']+)'/);
@@ -258,12 +258,11 @@
     }).then(function (r) { return r.json(); }).then(function (d) {
       if (!d.ok) throw new Error(d.error || 'fail');
       $('formWrap').hidden = true; $('install').hidden = true; $('done').hidden = false;
-      $('doneMsg').textContent = 'Request #' + d.num + ' is with Michael. He will be in touch.';
       window.scrollTo(0, 0);
     }).catch(function (e) {
       var msg = String(e && e.message);
       $('err').textContent = msg === 'size' ? 'Those files are too big together. Try fewer photos.' :
-        msg === 'link' ? 'This link is not working. Ask Michael for your personal link.' :
+        msg === 'link' ? 'This link is not working. Please use the personal link you were sent.' :
         'That did not send. Check your signal and tap Send again.';
     }).then(function () { btn.disabled = false; btn.textContent = 'Send to BuildFlowAI'; });
   };
