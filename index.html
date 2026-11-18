@@ -104,7 +104,6 @@
   <!-- The request form -->
   <section id="formWrap" hidden>
     <h1>New request</h1>
-    <p class="hi" id="hi">Tell Michael what you need. A sentence or two is plenty.</p>
     <form id="f" novalidate>
       <label class="q" for="what">What do you need?</label>
       <textarea id="what" placeholder="Example: Send the Smith client an update that tile starts Monday."></textarea>
@@ -126,7 +125,7 @@
       <input type="file" id="files" multiple>
       <ul class="flist" id="flist"></ul>
 
-      <button class="send" id="send" type="submit">Send to Michael</button>
+      <button class="send" id="send" type="submit">Send to BuildFlowAI</button>
       <p class="err" id="err" role="alert"></p>
     </form>
   </section>
@@ -178,11 +177,6 @@
   if (!standalone && mobile && store('abf_skip') !== '1') $('install').hidden = false;
   $('skip').onclick = function () { store('abf_skip', '1'); $('install').hidden = true; };
   $('formWrap').hidden = false;
-
-  // Say hi by name
-  fetch(API + '?k=' + encodeURIComponent(key)).then(function (r) { return r.json(); }).then(function (d) {
-    if (d && d.ok) $('hi').textContent = 'Hi ' + d.name + '. What do you need? A sentence or two is plenty.';
-  }).catch(function () {});
 
   // When chips (tap again to clear)
   var when = '';
@@ -258,7 +252,7 @@
       $('err').textContent = msg === 'size' ? 'Those files are too big together. Try fewer photos.' :
         msg === 'link' ? 'This link is not working. Ask Michael for your personal link.' :
         'That did not send. Check your signal and tap Send again.';
-    }).then(function () { btn.disabled = false; btn.textContent = 'Send to Michael'; });
+    }).then(function () { btn.disabled = false; btn.textContent = 'Send to BuildFlowAI'; });
   };
 
   $('again').onclick = function () {
