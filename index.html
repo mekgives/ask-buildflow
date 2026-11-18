@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#16181B; --card:#1F2226; --line:#33373D; --ink:#F1EEE6; --muted:#A9A79F; --accent:#D4F53C; --bad:#FF8A7A; }
+  :root { --bg:#16181B; --card:#1F2226; --line:#33373D; --ink:#F1EEE6; --muted:#A9A79F; --accent:#B4EE3A; --bad:#FF8A7A; }
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html, body { background:var(--bg); }
   body { margin:0; color:var(--ink); font-family:"Outfit", -apple-system, system-ui, sans-serif; font-size:18px; line-height:1.4;
@@ -148,7 +148,7 @@
 <script>
 // Home-screen apps can hold an old copy of this page. If a newer one is online, reload once.
 (function () {
-  var V = 'v2026-11-18d';
+  var V = 'v2026-11-18e';
   try {
     fetch(location.pathname + '?nocache=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
       var m = t.match(/var V = '([^']+)'/);
