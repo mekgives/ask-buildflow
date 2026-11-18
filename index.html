@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ask BuildFlow</title>
+<meta name="apple-mobile-web-app-title" content="Ask BuildFlow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#16181B">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="robots" content="noindex">
+<style>
+  :root { --bg:#16181B; --ink:#F1EEE6; --muted:#A9A79F; --accent:#D4F53C; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
+         font-family:-apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+         display:flex; flex-direction:column; align-items:center; justify-content:center;
+         padding:32px 16px; text-align:center; }
+  img.logo { width:min(320px, 80vw); height:auto; margin-bottom:36px; }
+  a.btn { display:block; width:min(360px, 100%); padding:18px 20px; border-radius:14px;
+          background:var(--accent); color:#16181B; font-weight:700; font-size:20px; text-decoration:none; }
+  .steps { margin-top:36px; max-width:360px; color:var(--muted); font-size:15px; line-height:1.5; text-align:left; }
+  .steps b { color:var(--ink); }
+  .steps h2 { font-size:15px; color:var(--ink); margin:0 0 6px; }
+  .steps ol { margin:0 0 18px; padding-left:20px; }
+  .go { color:var(--muted); font-size:15px; }
+</style>
+</head>
+<body>
+<img class="logo" src="icons/logo.png" alt="BuildFlow AI, AI Business Builder">
+<a class="btn" id="open" href="#">Ask BuildFlow</a>
+<p class="go" id="going" hidden>Opening&hellip;</p>
+<div class="steps" id="steps">
+  <h2>Put this on your home screen</h2>
+  <ol id="ios"><li>Tap <b>Share</b> (square with an up arrow) at the bottom of Safari.</li>
+    <li>Tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>.</li></ol>
+  <ol id="android" hidden><li>Tap the <b>three dots</b> at the top right of Chrome.</li>
+    <li>Tap <b>Add to Home screen</b> (or <b>Install app</b>).</li><li>Tap <b>Add</b>.</li></ol>
+</div>
+<script>
+  var FORM = "https://docs.google.com/forms/d/e/1FAIpQLSf18am8Ynn-znbKaFv6LWw6pMjgP_4BL259XplPqx163wXb8g/viewform";
+  document.getElementById('open').href = FORM;
+  var standalone = window.navigator.standalone === true ||
+    (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+    /[?&]app=1/.test(location.search);
+  if (/android/i.test(navigator.userAgent)) {
+    document.getElementById('ios').hidden = true; document.getElementById('android').hidden = false;
+  }
+  if (standalone) {
+    // Opened from the home-screen icon: go straight to the form.
+    document.getElementById('steps').hidden = true;
+    document.getElementById('going').hidden = false;
+    location.replace(FORM);
+  }
+</script>
+</body>
+</html>
