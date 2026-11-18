@@ -9,53 +9,249 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#16181B">
+<meta name="robots" content="noindex">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32">
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="robots" content="noindex">
+<link rel="icon" href="icons/pwa-icon-192.png" sizes="192x192">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#16181B; --ink:#F1EEE6; --muted:#A9A79F; --accent:#D4F53C; }
-  * { box-sizing:border-box; }
-  body { margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
-         font-family:-apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
-         display:flex; flex-direction:column; align-items:center; justify-content:center;
-         padding:32px 16px; text-align:center; }
-  img.logo { width:min(320px, 80vw); height:auto; margin-bottom:36px; }
-  a.btn { display:block; width:min(360px, 100%); padding:18px 20px; border-radius:14px;
-          background:var(--accent); color:#16181B; font-weight:700; font-size:20px; text-decoration:none; }
-  .steps { margin-top:36px; max-width:360px; color:var(--muted); font-size:15px; line-height:1.5; text-align:left; }
-  .steps b { color:var(--ink); }
-  .steps h2 { font-size:15px; color:var(--ink); margin:0 0 6px; }
-  .steps ol { margin:0 0 18px; padding-left:20px; }
-  .go { color:var(--muted); font-size:15px; }
+  :root { --bg:#16181B; --card:#1F2226; --line:#33373D; --ink:#F1EEE6; --muted:#A9A79F; --accent:#D4F53C; --bad:#FF8A7A; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { background:var(--bg); }
+  body { margin:0; color:var(--ink); font-family:"Outfit", -apple-system, system-ui, sans-serif; font-size:18px; line-height:1.4;
+         padding:max(20px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)); }
+  main { max-width:520px; margin:0 auto; }
+  header { text-align:center; padding:8px 0 18px; }
+  header img { width:min(260px, 70vw); height:auto; }
+  h1 { font-size:28px; font-weight:600; margin:0 0 4px; }
+  .hi { color:var(--muted); margin:0 0 22px; }
+  label.q { display:block; font-weight:600; margin:22px 0 8px; }
+  label.q small { font-weight:400; color:var(--muted); }
+  textarea, input[type=text] { width:100%; background:var(--card); color:var(--ink); border:1.5px solid var(--line);
+         border-radius:14px; padding:14px; font:inherit; outline:none; }
+  textarea { min-height:140px; resize:vertical; }
+  textarea:focus, input[type=text]:focus { border-color:var(--accent); }
+  ::placeholder { color:#6E6C66; }
+  .chips { display:flex; gap:10px; flex-wrap:wrap; }
+  .chips button { flex:1 1 30%; min-height:52px; background:var(--card); color:var(--ink); border:1.5px solid var(--line);
+         border-radius:14px; font:inherit; font-size:16px; cursor:pointer; }
+  .chips button.on { background:var(--accent); color:var(--bg); border-color:var(--accent); font-weight:600; }
+  .add { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; min-height:56px; background:var(--card);
+         border:1.5px dashed var(--line); border-radius:14px; color:var(--ink); font:inherit; cursor:pointer; }
+  #files { display:none; }
+  .flist { list-style:none; padding:0; margin:10px 0 0; }
+  .flist li { display:flex; justify-content:space-between; gap:10px; padding:8px 4px; color:var(--muted); font-size:15px; border-bottom:1px solid var(--line); }
+  .flist button { background:none; border:0; color:var(--muted); font:inherit; font-size:15px; text-decoration:underline; cursor:pointer; }
+  .send { width:100%; min-height:62px; margin-top:28px; background:var(--accent); color:var(--bg); border:0; border-radius:16px;
+         font:inherit; font-size:21px; font-weight:700; cursor:pointer; }
+  .send:disabled { opacity:.55; }
+  .err { color:var(--bad); margin:12px 0 0; min-height:1em; }
+  .done { text-align:center; padding:40px 0 10px; }
+  .done .big { width:84px; height:84px; border-radius:50%; background:var(--accent); color:var(--bg); display:flex; align-items:center;
+         justify-content:center; margin:0 auto 18px; }
+  .done h1 { font-size:30px; }
+  .ghost { margin-top:26px; background:none; border:1.5px solid var(--line); color:var(--ink); border-radius:14px; min-height:54px;
+         width:100%; font:inherit; cursor:pointer; }
+  /* install card */
+  .install { background:var(--card); border:1.5px solid var(--line); border-radius:18px; padding:20px 18px; margin-bottom:26px; }
+  .install h2 { margin:0 0 4px; font-size:22px; font-weight:600; }
+  .install p.sub { margin:0 0 16px; color:var(--muted); font-size:16px; }
+  .step { display:flex; align-items:center; gap:14px; padding:12px 0; border-top:1px solid var(--line); }
+  .num { flex:0 0 36px; height:36px; border-radius:50%; background:var(--accent); color:var(--bg); font-weight:700; display:flex; align-items:center; justify-content:center; }
+  .step .txt { flex:1; font-size:18px; }
+  .pic { flex:0 0 auto; display:flex; align-items:center; justify-content:center; min-width:52px; height:46px; padding:0 10px; border-radius:10px;
+         background:#2B2F34; color:#4DA3FF; font-size:15px; font-weight:600; }
+  .pic.plain { color:var(--ink); }
+  .install .skip { display:block; margin:14px auto 0; background:none; border:0; color:var(--muted); font:inherit; font-size:16px; text-decoration:underline; cursor:pointer; }
+  .nolink { text-align:center; padding:30px 10px; color:var(--muted); }
+  footer { text-align:center; margin:44px 0 6px; color:var(--muted); font-size:13px; }
+  footer img { width:120px; height:auto; display:block; margin:0 auto 6px; opacity:.85; }
+  [hidden] { display:none !important; }
 </style>
 </head>
 <body>
-<img class="logo" src="icons/logo.png" alt="BuildFlow AI, AI Business Builder">
-<a class="btn" id="open" href="#">Ask BuildFlow</a>
-<p class="go" id="going" hidden>Opening&hellip;</p>
-<div class="steps" id="steps">
-  <h2>Put this on your home screen</h2>
-  <ol id="ios"><li>Tap <b>Share</b> (square with an up arrow) at the bottom of Safari.</li>
-    <li>Tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>.</li></ol>
-  <ol id="android" hidden><li>Tap the <b>three dots</b> at the top right of Chrome.</li>
-    <li>Tap <b>Add to Home screen</b> (or <b>Install app</b>).</li><li>Tap <b>Add</b>.</li></ol>
-</div>
+<main>
+  <header><img src="icons/logo.png" alt="BuildFlow AI, AI Business Builder"></header>
+
+  <!-- Shown in the browser (not yet on the home screen) -->
+  <section class="install" id="install" hidden>
+    <h2>Put this on your home screen</h2>
+    <p class="sub">Do this once. Then you just tap the icon.</p>
+    <div id="ios">
+      <div class="step"><span class="num">1</span><span class="txt">Tap the <b>Share</b> button at the bottom of the screen</span>
+        <span class="pic" aria-hidden="true"><svg width="26" height="30" viewBox="0 0 26 30" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2v17M7 8l6-6 6 6"/><path d="M8 12H4v16h18V12h-4"/></svg></span></div>
+      <div class="step"><span class="num">2</span><span class="txt">Scroll down and tap <b>Add to Home Screen</b></span>
+        <span class="pic plain" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="22" height="22" rx="5"/><path d="M13 8v10M8 13h10"/></svg></span></div>
+      <div class="step"><span class="num">3</span><span class="txt">Tap <b>Add</b> at the top right</span>
+        <span class="pic">Add</span></div>
+    </div>
+    <div id="android" hidden>
+      <div class="step"><span class="num">1</span><span class="txt">Tap the <b>three dots</b> at the top right</span>
+        <span class="pic plain" aria-hidden="true"><svg width="8" height="26" viewBox="0 0 8 26" fill="currentColor"><circle cx="4" cy="4" r="3"/><circle cx="4" cy="13" r="3"/><circle cx="4" cy="22" r="3"/></svg></span></div>
+      <div class="step"><span class="num">2</span><span class="txt">Tap <b>Add to Home screen</b></span>
+        <span class="pic plain" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="22" height="22" rx="5"/><path d="M13 8v10M8 13h10"/></svg></span></div>
+      <div class="step"><span class="num">3</span><span class="txt">Tap <b>Add</b></span><span class="pic">Add</span></div>
+    </div>
+    <button class="skip" id="skip" type="button">Skip for now and use it here</button>
+  </section>
+
+  <!-- The request form -->
+  <section id="formWrap" hidden>
+    <h1>Ask BuildFlow</h1>
+    <p class="hi" id="hi">Tell Michael what you need. A sentence or two is plenty.</p>
+    <form id="f" novalidate>
+      <label class="q" for="what">What do you need?</label>
+      <textarea id="what" placeholder="Example: Send the Smith client an update that tile starts Monday."></textarea>
+
+      <label class="q" for="job">Which job? <small>(optional)</small></label>
+      <input type="text" id="job" autocomplete="off" placeholder="Smith kitchen">
+
+      <label class="q">When do you need it? <small>(optional)</small></label>
+      <div class="chips" id="when">
+        <button type="button" data-v="Today (urgent)">Today</button>
+        <button type="button" data-v="This week">This week</button>
+        <button type="button" data-v="No rush">No rush</button>
+      </div>
+
+      <label class="q">Photos or files <small>(optional)</small></label>
+      <button type="button" class="add" id="addBtn">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 3v16M3 11h16"/></svg>
+        Add photos or files</button>
+      <input type="file" id="files" multiple>
+      <ul class="flist" id="flist"></ul>
+
+      <button class="send" id="send" type="submit">Send to Michael</button>
+      <p class="err" id="err" role="alert"></p>
+    </form>
+  </section>
+
+  <section class="done" id="done" hidden>
+    <div class="big"><svg width="42" height="42" viewBox="0 0 42 42" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 22l8 8 16-17"/></svg></div>
+    <h1>Got it</h1>
+    <p class="hi" id="doneMsg">Michael has your request and will be in touch.</p>
+    <button class="ghost" id="again" type="button">Send another</button>
+  </section>
+
+  <section class="nolink" id="nolink" hidden>
+    <p>This page needs your personal link.<br>Ask Michael to send it to you.</p>
+  </section>
+
+  <footer><img src="icons/logo.png" alt="BuildFlow AI">Ask BuildFlow</footer>
+</main>
+
 <script>
-  var FORM = "https://docs.google.com/forms/d/e/1FAIpQLSf18am8Ynn-znbKaFv6LWw6pMjgP_4BL259XplPqx163wXb8g/viewform";
-  document.getElementById('open').href = FORM;
+(function () {
+  var API = "https://script.google.com/macros/s/AKfycbzi4KHTN8AChENP4Ar28nSZCsBPkSzxQ2dytwbO-GTAX0x5VGnK60bLJXq3WZm_A7zU9g/exec";
+  var MAX_TOTAL = 30 * 1024 * 1024; // keep uploads reasonable for a phone connection
+  var $ = function (id) { return document.getElementById(id); };
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+
+  // Who is this? The personal link carries a private key (?k=...). Remember it on this phone.
+  var m = location.search.match(/[?&]k=([\w-]+)/);
+  var key = m ? m[1] : store('abf_k');
+  if (m) store('abf_k', key);
+
   var standalone = window.navigator.standalone === true ||
-    (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
-    /[?&]app=1/.test(location.search);
-  if (/android/i.test(navigator.userAgent)) {
-    document.getElementById('ios').hidden = true; document.getElementById('android').hidden = false;
+    (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+  if (/android/i.test(navigator.userAgent)) { $('ios').hidden = true; $('android').hidden = false; }
+
+  if (!key) { $('nolink').hidden = false; return; }
+
+  var mobile = /iphone|ipad|ipod|android/i.test(navigator.userAgent);
+  if (!standalone && mobile && store('abf_skip') !== '1') $('install').hidden = false;
+  $('skip').onclick = function () { store('abf_skip', '1'); $('install').hidden = true; };
+  $('formWrap').hidden = false;
+
+  // Say hi by name
+  fetch(API + '?k=' + encodeURIComponent(key)).then(function (r) { return r.json(); }).then(function (d) {
+    if (d && d.ok) $('hi').textContent = 'Hi ' + d.name + '. What do you need? A sentence or two is plenty.';
+  }).catch(function () {});
+
+  // When chips (tap again to clear)
+  var when = '';
+  Array.prototype.forEach.call(document.querySelectorAll('#when button'), function (b) {
+    b.onclick = function () {
+      var on = !b.classList.contains('on');
+      Array.prototype.forEach.call(document.querySelectorAll('#when button'), function (x) { x.classList.remove('on'); });
+      if (on) b.classList.add('on');
+      when = on ? b.getAttribute('data-v') : '';
+    };
+  });
+
+  // Files
+  var picked = [];
+  $('addBtn').onclick = function () { $('files').click(); };
+  $('files').onchange = function () {
+    Array.prototype.forEach.call(this.files, function (f) { if (picked.length < 10) picked.push(f); });
+    this.value = ''; drawFiles();
+  };
+  function drawFiles() {
+    var ul = $('flist'); ul.innerHTML = '';
+    picked.forEach(function (f, i) {
+      var li = document.createElement('li');
+      var s = document.createElement('span'); s.textContent = f.name || ('Photo ' + (i + 1));
+      var x = document.createElement('button'); x.type = 'button'; x.textContent = 'Remove';
+      x.onclick = function () { picked.splice(i, 1); drawFiles(); };
+      li.appendChild(s); li.appendChild(x); ul.appendChild(li);
+    });
   }
-  if (standalone) {
-    // Opened from the home-screen icon: go straight to the form.
-    document.getElementById('steps').hidden = true;
-    document.getElementById('going').hidden = false;
-    location.replace(FORM);
+
+  // Phone photos are big: shrink them before sending
+  function readFile(f) {
+    return new Promise(function (res, rej) {
+      var fr = new FileReader();
+      fr.onload = function () { res(String(fr.result).split(',')[1]); };
+      fr.onerror = rej; fr.readAsDataURL(f);
+    });
   }
+  function shrink(f) {
+    if (!/^image\/(jpeg|png|webp|heic|heif)$/i.test(f.type)) return readFile(f).then(function (d) { return { name: f.name, type: f.type, data: d }; });
+    return new Promise(function (res) {
+      var url = URL.createObjectURL(f), img = new Image();
+      img.onload = function () {
+        var s = Math.min(1, 2000 / Math.max(img.width, img.height));
+        var c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+        var name = (f.name || 'photo').replace(/\.\w+$/, '') + '.jpg';
+        res({ name: name, type: 'image/jpeg', data: c.toDataURL('image/jpeg', 0.85).split(',')[1] });
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); readFile(f).then(function (d) { res({ name: f.name, type: f.type, data: d }); }); };
+      img.src = url;
+    });
+  }
+
+  $('f').onsubmit = function (ev) {
+    ev.preventDefault();
+    var what = $('what').value.trim();
+    $('err').textContent = '';
+    if (!what) { $('err').textContent = 'Please say what you need.'; $('what').focus(); return; }
+    var btn = $('send'); btn.disabled = true; btn.textContent = picked.length ? 'Sending files...' : 'Sending...';
+    Promise.all(picked.map(shrink)).then(function (files) {
+      var total = files.reduce(function (n, f) { return n + f.data.length * 0.75; }, 0);
+      if (total > MAX_TOTAL) throw new Error('size');
+      return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ k: key, what: what, job: $('job').value.trim(), when: when, files: files }) });
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d.ok) throw new Error(d.error || 'fail');
+      $('formWrap').hidden = true; $('install').hidden = true; $('done').hidden = false;
+      $('doneMsg').textContent = 'Request #' + d.num + ' is with Michael. He will be in touch.';
+      window.scrollTo(0, 0);
+    }).catch(function (e) {
+      var msg = String(e && e.message);
+      $('err').textContent = msg === 'size' ? 'Those files are too big together. Try fewer photos.' :
+        msg === 'link' ? 'This link is not working. Ask Michael for your personal link.' :
+        'That did not send. Check your signal and tap Send again.';
+    }).then(function () { btn.disabled = false; btn.textContent = 'Send to Michael'; });
+  };
+
+  $('again').onclick = function () {
+    $('what').value = ''; $('job').value = ''; picked = []; drawFiles(); when = '';
+    Array.prototype.forEach.call(document.querySelectorAll('#when button'), function (x) { x.classList.remove('on'); });
+    $('done').hidden = true; $('formWrap').hidden = false; window.scrollTo(0, 0);
+  };
+})();
 </script>
 </body>
 </html>
