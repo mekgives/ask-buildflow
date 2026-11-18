@@ -79,10 +79,14 @@
   <section class="install" id="install" hidden>
     <h2>Put this on your home screen</h2>
     <p class="sub">Do this once. Then you just tap the icon.</p>
+    <div id="notsafari" hidden>
+      <div class="step"><span class="num">!</span><span class="txt">First open this page in <b>Safari</b>. Tap the <b>&bull;&bull;&bull;</b> or <b>compass</b> button and choose <b>Open in Safari</b>. Or tap <b>Copy link</b> below and paste it into Safari.</span></div>
+      <button class="ghost" id="copy" type="button" style="margin:4px 0 8px">Copy link</button>
+    </div>
     <div id="ios">
-      <div class="step"><span class="num">1</span><span class="txt">Tap the <b>Share</b> button at the bottom of the screen</span>
+      <div class="step"><span class="num">1</span><span class="txt">Tap <b>Share</b>. It's at the bottom of Safari. If you don't see it, tap <b>&bull;&bull;&bull;</b> at the bottom right first, then <b>Share</b>.</span>
         <span class="pic" aria-hidden="true"><svg width="26" height="30" viewBox="0 0 26 30" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2v17M7 8l6-6 6 6"/><path d="M8 12H4v16h18V12h-4"/></svg></span></div>
-      <div class="step"><span class="num">2</span><span class="txt">Scroll down and tap <b>Add to Home Screen</b></span>
+      <div class="step"><span class="num">2</span><span class="txt">Scroll down and tap <b>Add to Home Screen</b> (you may need to tap <b>View More</b> first)</span>
         <span class="pic plain" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="22" height="22" rx="5"/><path d="M13 8v10M8 13h10"/></svg></span></div>
       <div class="step"><span class="num">3</span><span class="txt">Tap <b>Add</b> at the top right</span>
         <span class="pic">Add</span></div>
@@ -155,7 +159,18 @@
 
   var standalone = window.navigator.standalone === true ||
     (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
-  if (/android/i.test(navigator.userAgent)) { $('ios').hidden = true; $('android').hidden = false; }
+  var ua = navigator.userAgent;
+  if (/android/i.test(ua)) { $('ios').hidden = true; $('android').hidden = false; }
+  // On iPhone, only Safari can add to the home screen. Other apps' browsers (Gmail, Chrome, texts preview, etc.) can't.
+  var iOS = /iphone|ipad|ipod/i.test(ua);
+  var realSafari = iOS && /Safari\//.test(ua) && !/CriOS|FxiOS|EdgiOS|GSA|FBAN|FBAV|Instagram|Line\/|DuckDuckGo/i.test(ua);
+  if (iOS && !realSafari) $('notsafari').hidden = false;
+  $('copy').onclick = function () {
+    var u = location.origin + location.pathname + '?k=' + (key || '');
+    var done = function () { $('copy').textContent = 'Copied. Now open Safari and paste it.'; };
+    if (navigator.clipboard) navigator.clipboard.writeText(u).then(done, function () { prompt('Copy this link:', u); });
+    else prompt('Copy this link:', u);
+  };
 
   if (!key) { $('nolink').hidden = false; return; }
 
