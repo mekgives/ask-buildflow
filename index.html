@@ -10,6 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#16181B">
 <meta name="robots" content="noindex">
+<meta http-equiv="Cache-Control" content="no-cache">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32">
 <link rel="icon" href="icons/pwa-icon-192.png" sizes="192x192">
@@ -145,6 +146,18 @@
 </main>
 
 <script>
+// Home-screen apps can hold an old copy of this page. If a newer one is online, reload once.
+(function () {
+  var V = 'v2026-11-18d';
+  try {
+    fetch(location.pathname + '?nocache=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
+      var m = t.match(/var V = '([^']+)'/);
+      if (m && m[1] !== V && sessionStorage.getItem('abf_reloaded') !== m[1]) {
+        sessionStorage.setItem('abf_reloaded', m[1]); location.reload();
+      }
+    }).catch(function () {});
+  } catch (e) {}
+})();
 (function () {
   var API = "https://script.google.com/macros/s/AKfycbzi4KHTN8AChENP4Ar28nSZCsBPkSzxQ2dytwbO-GTAX0x5VGnK60bLJXq3WZm_A7zU9g/exec";
   var MAX_TOTAL = 30 * 1024 * 1024; // keep uploads reasonable for a phone connection
